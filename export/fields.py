@@ -25,7 +25,7 @@ class AdminSplitDateTime(forms.SplitDateTimeWidget):
         return mark_safe(u'<p class="datetime">%s %s %s %s</p>\
                 <p class="datetime">%s %s %s %s</p>' % (
                     _('Start Date:'), rendered_widgets[0],
-                    _(' Start Time:'), rendered_widgets[1],
+                    _('Start Time:'), rendered_widgets[1],
                     _('End Date:'), rendered_widgets[2],
                     _('End Time:'), rendered_widgets[3])
                 )
@@ -76,11 +76,12 @@ class AdminSplitInteger(forms.SplitDateTimeWidget):
 
 class BasicTextField(forms.fields.CharField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label') 
         super(BasicTextField, self).__init__(
             required=False,
-            help_text="Only objects containing the entered text in its '%s' \
+            help_text=_("Only objects containing the entered text in its '%(field)s' \
                     field will be exported. Case is ignored." % \
-                    field.label.lower(),
+                    {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -91,15 +92,16 @@ class BasicTextField(forms.fields.CharField):
 
 class BooleanField(forms.fields.ChoiceField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label') 
         super(BooleanField, self).__init__(
             required=False,
-            help_text="Only objects having its '%s' field set as selected will\
+            help_text=_("Only objects having its '%(field)s' field set as selected will\
                     be exported. Select 'Either' to ignore." % \
-                    field.label.lower(),
+                    {'field': field.label.lower()}),
             choices=(
-                ("", "Either"),
-                (True, "Yes"),
-                (False, "No"),
+                ("", _("Either")),
+                (True, _("Yes")),
+                (False, _("No")),
             ),
             *args,
             **kwargs
@@ -130,11 +132,12 @@ class CommaSeparatedIntegerField(BasicTextField):
 
 class DateField(forms.fields.DateField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(DateField, self).__init__(
             required=False,
             widget=AdminSplitDate,
-            help_text="Only objects with a '%s' date within the provided range\
-                    will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' date within the provided range\
+                    will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -195,11 +198,12 @@ class DateField(forms.fields.DateField):
 
 class DateTimeField(forms.fields.DateTimeField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(DateTimeField, self).__init__(
             required=False,
             widget=AdminSplitDateTime,
-            help_text="Only objects with a '%s' date within the provided \
-                    range will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' date within the provided \
+                    range will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -268,11 +272,12 @@ class FilePathField(BasicTextField):
 
 class IntegerField(forms.fields.IntegerField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(IntegerField, self).__init__(
             required=False,
             widget=AdminSplitInteger,
-            help_text="Only objects with a '%s' value within the provided \
-                    range will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' value within the provided \
+                    range will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -316,11 +321,12 @@ class IntegerField(forms.fields.IntegerField):
 
 class FloatField(forms.fields.FloatField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(FloatField, self).__init__(
             required=False,
             widget=AdminSplitInteger,
-            help_text="Only objects with a '%s' value within the provided \
-                    range will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' value within the provided \
+                    range will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -368,11 +374,12 @@ class ImageField(BasicTextField):
 
 class DecimalField(forms.fields.DecimalField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(DecimalField, self).__init__(
             required=False,
             widget=AdminSplitInteger,
-            help_text="Only objects with a '%s' value within the provided \
-                    range will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' value within the provided \
+                    range will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -468,12 +475,13 @@ class ModelChoiceField(forms.models.ModelChoiceField):
 
 class ModelMultipleChoiceField(forms.models.ModelMultipleChoiceField):
     def __init__(self, field, queryset, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(ModelMultipleChoiceField, self).__init__(
             queryset=queryset,
             required=False,
-            help_text="Only objects with relationships to the selected %s \
+            help_text=_("Only objects with relationships to the selected %(field)s \
                     above will be exported. Hold down 'Control', or 'Command' \
-                    on a Mac, to select more than one." % field.label.lower(),
+                    on a Mac, to select more than one." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -504,11 +512,12 @@ class TextField(BasicTextField):
 
 class TimeField(forms.fields.TimeField):
     def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
         super(TimeField, self).__init__(
             required=False,
             widget=AdminSplitTime,
-            help_text="Only objects with a '%s' time within the provided range\
-                    will be exported." % field.label.lower(),
+            help_text=_("Only objects with a '%(field)s' time within the provided range\
+                    will be exported." % {'field': field.label.lower()}),
             *args, **kwargs
         )
 
@@ -573,6 +582,24 @@ class TimeField(forms.fields.TimeField):
 
         return queryset.filter(**kwargs)
 
+
+class TypedChoiceField(forms.fields.TypedChoiceField):
+    
+    def __init__(self, field, *args, **kwargs):
+        kwargs['label'] = getattr(field, 'label')
+        kwargs['choices'] = getattr(field, 'choices')
+        
+        super(TypedChoiceField, self).__init__(
+            required=False,
+            help_text=_("Only objects with selected value in '%(field)s' \
+                    will be exported." % {'field': field.label.lower()}),
+            *args, **kwargs
+        )
+
+    def filter(self, name, value, queryset):
+        kwargs = {'%s' % name: value}
+        return queryset.filter(**kwargs)
+    
 
 class SlugField(BasicTextField):
     pass

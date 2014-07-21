@@ -5,6 +5,7 @@ from django.core import serializers
 from django.contrib.admin import helpers
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.utils.translation import gettext as _
 
 import object_tools
 from export import forms
@@ -12,8 +13,8 @@ from export import forms
 
 class Export(object_tools.ObjectTool):
     name = 'export'
-    label = 'Export'
-    help_text = 'Export filtered objects for download.'
+    label = _('Export')
+    help_text = _('Export filtered objects for download.')
     form_class = forms.Export
 
     def serialize(self, format, queryset, fields):
